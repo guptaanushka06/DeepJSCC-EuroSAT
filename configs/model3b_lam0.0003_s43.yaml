@@ -1,0 +1,64 @@
+# configs/model3b_lam0.0003_s43.yaml
+# --------------------------------------
+# Multi-Seed Reliability: Seed 43
+# Model 3b: Semantic-Loss Refiner (λ = 0.0003)
+# Base model: Frozen Model 2d (ResNetJSCC_2d)
+# Refiner: Plain CNN refiner (669k params)
+# Loss: L = MSE(refined, target) + λ * CE(classifier(norm(refined)), label)
+
+model:
+  name: "SwinRefineJSCC"
+  channel: "awgn"
+
+  # Base model (frozen)
+  base_config:      "configs/model2d.yaml"
+  base_checkpoint:  "checkpoints/model2d/best.pt"
+
+  # Refiner architecture: parameter-matched CNN control
+  refiner:          "cnn"
+  cnn_mid_ch:       64
+  cnn_n_blocks:     9
+
+  random_channel:   false
+
+training:
+  seed:         43
+  epochs:       10
+  patience:     5
+  batch_size:   64
+  num_workers:  2
+
+  amp:          true
+  crop_size:    null
+  augment:      true
+  weight_decay: 1.0e-4
+
+  optimizer:    "adam"
+  lr:           1.0e-4
+  lr_swinir:    1.0e-4
+
+  scheduler:    "cosine"
+  lr_min:       1.0e-6
+
+  # Semantic loss configuration
+  semantic_lambda:        0.0003
+  classifier_checkpoint:  "checkpoints/classifier/best.pt"
+  early_stop_metric:      "accuracy"
+  psnr_floor:             25.0   # Base 2d PSNR (~25.5) minus 0.5 dB
+
+  snr_min:      0.0
+  snr_max:      20.0
+
+data:
+  root:         "./data"
+  download:     true
+
+checkpoints:
+  dir:          "./checkpoints/model3b_lam0.0003_s43"
+  save_every:   5
+
+logging:
+  log_dir:      "./results/model3b_lam0.0003_s43"
+  eval_snrs:    [0, 5, 10, 15, 20]
+  eval_channels: ["awgn", "rayleigh"]
+

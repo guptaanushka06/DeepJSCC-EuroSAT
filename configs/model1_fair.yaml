@@ -1,0 +1,57 @@
+# configs/model1_fair.yaml
+# -------------------------
+# Model 1 (Fair): Plain DeepJSCC retrained with the SAME recipe as later models.
+#
+# Difference from model1.yaml:
+#   - 30 epochs (not 80)
+#   - augment: true (not false/missing)
+#   - patience: 8 (early stopping)
+#   - weight_decay: 1.0e-4
+#
+# This enables a fair architectural comparison between PlainDeepJSCC
+# and the ResNet-based pipelines (Models 2, 2d, 3, 4).
+#
+# Run with:  python train.py --config configs/model1_fair.yaml
+
+model:
+  name: "PlainDeepJSCC"
+  channel: "awgn"
+
+training:
+  seed:         42
+  epochs:       30
+  patience:     8
+  batch_size:   64
+  num_workers:  2
+
+  augment:      true
+  amp:          true
+  weight_decay: 1.0e-4
+
+  # SNR range for random-SNR training
+  snr_min:  0.0
+  snr_max: 20.0
+
+  # Optimizer
+  optimizer:   "adam"
+  lr:          1.0e-3
+
+  # LR schedule: cosine annealing
+  scheduler: "cosine"
+  lr_min:    1.0e-5
+
+  # Loss
+  loss: "mse"
+
+data:
+  root:       "./data"
+  download:   true
+
+checkpoints:
+  dir:        "./checkpoints/model1_fair"
+  save_every: 5
+
+logging:
+  log_dir:    "./results/model1_fair"
+  eval_snrs:  [0, 5, 10, 15, 20]
+  eval_channels: ["awgn", "rayleigh"]

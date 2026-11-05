@@ -1,0 +1,56 @@
+# configs/model4.yaml
+# -------------------
+# Stage 4: End-to-End Swin Transformer JSCC (SwinJSCC)
+#
+# Architecture:
+# - PatchEmbed: Conv2d(3 -> 48, 4x4, stride 4) -> 16x16 tokens (dim 48)
+# - Encoder: 3 Swin stages with PatchMerging (dim: 48 -> 96 -> 192)
+# - Bottleneck: 1x1 Conv (192 -> 256) on 4x4 spatial grid = 4,096 reals (matching Models 1-3)
+# - Channel: Power-normalised transmission over AWGN / Rayleigh
+# - Decoder: 1x1 Conv (256 -> 192) + 3 Swin stages with PatchExpand (dim: 192 -> 96 -> 48)
+# - Reconstruction: PixelShuffle(4) from 48 channels to 3 channels of 64x64
+#
+# Run with:  python train.py --config configs/model4.yaml
+
+model:
+  name: "SwinJSCC"
+  channel: "awgn"
+
+  embed_dim:    48
+  depths:       [2, 2, 2]      # Stage 1 (16x16), Stage 2 (8x8), Stage 3 (4x4)
+  num_heads:    [3, 6, 6]      # divisible by embed_dim at each stage
+  window_sizes: [8, 8, 4]      # window size for each stage
+  bottleneck_ch: 256           # 256 ch * 4 * 4 = 4096 reals
+
+training:
+  seed:         42
+  epochs:       30
+  patience:     8
+  batch_size:   64
+  num_workers:  2
+
+  amp:          true           # FP16 mixed precision autocast for training step
+  augment:      true
+  weight_decay: 1.0e-4
+
+  optimizer:    "adam"
+  lr:           1.0e-3
+  scheduler:    "cosine"
+  lr_min:       1.0e-5
+  loss:         "mse"
+
+  snr_min:      0.0
+  snr_max:      20.0
+
+data:
+  root:         "./data"
+  download:     true
+
+checkpoints:
+  dir:          "./checkpoints/model4"
+  save_every:   1              # Checkpoint every epoch as requested
+
+logging:
+  log_dir:      "./results/model4"
+  eval_snrs:    [0, 5, 10, 15, 20]
+  eval_channels: ["awgn", "rayleigh"]

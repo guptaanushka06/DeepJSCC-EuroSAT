@@ -1,0 +1,19 @@
+======================================================================
+  MODEL & TRAINING CONFIGURATION AUDIT
+======================================================================
+  Device              : cuda
+  Config File         : configs/model2d_long.yaml
+  Model Architecture  : ResNetJSCC_2d
+  Train Crop Size     : None (full 64x64)
+  Mixed Precision     : FP16 Autocast ON
+  Semantic Lambda (lam): 0.0
+PSNR
+  Total Epochs        : 60
+  EarlyStop Patience  : 15
+  Batch Size          : 64
+  Learning Rate       : 0.001
+  Data Augmentation   : ENABLED (train only)
+  Parameters: Total   : 4,351,845
+  Parameters: Train   : 3,668,773
+  Parameters: Frozen  : 683,072
+======================================================================

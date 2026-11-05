@@ -1,0 +1,24 @@
+======================================================================
+  MODEL & TRAINING CONFIGURATION AUDIT
+======================================================================
+  Device              : cuda
+  Config File         : configs/model3_swinir.yaml
+  Model Architecture  : SwinRefineJSCC
+  Refiner Variant     : swinir
+  SwinIR Depths       : [4, 4, 4, 4]
+  SwinIR Embed Dim    : 60
+  SwinIR Heads        : [6, 6, 6, 6]
+  SwinIR Window Size  : 8
+  Train Crop Size     : 32x32
+  Mixed Precision     : FP16 Autocast ON
+  Semantic Lambda (lam): 0.0
+PSNR
+  Total Epochs        : 15
+  EarlyStop Patience  : 5
+  Batch Size          : 64
+  Learning Rate       : 0.0001
+  Data Augmentation   : ENABLED (train only)
+  Parameters: Total   : 5,022,736
+  Parameters: Train   : 670,891
+  Parameters: Frozen  : 4,351,845
+======================================================================

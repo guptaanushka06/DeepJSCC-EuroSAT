@@ -1,0 +1,44 @@
+# configs/model2c.yaml
+# --------------------
+# Model 2c: ResNet-18 Layer-3 Features (256×4×4 = 4096 values)
+# Lightweight Conv2d projection (no dense 4096×4096 layer)
+# Synchronized training data augmentation + weight decay 1e-4
+
+model:
+  name: "ResNetJSCC_2c"
+  channel: "awgn"         # default channel; eval tests AWGN and Rayleigh
+
+training:
+  seed:         42
+  epochs:       30        # reduced from 80 (val peaks early)
+  patience:     8         # early stopping on val PSNR (AWGN 10 dB)
+  batch_size:   64
+  num_workers:  2         # use 0 if multiprocessing issues occur
+
+  # Regularization
+  augment:      true      # random horizontal/vertical flips & 90-deg rotations
+  weight_decay: 1.0e-4    # L2 regularization
+
+  # SNR range for random-SNR training
+  snr_min:      0.0       # dB
+  snr_max:      20.0      # dB
+
+  # Optimizer & Schedule
+  optimizer:    "adam"
+  lr:           1.0e-3
+  scheduler:    "cosine"
+  lr_min:       1.0e-5
+  loss:         "mse"
+
+data:
+  root:         "./data"
+  download:     true
+
+checkpoints:
+  dir:          "./checkpoints/model2c"
+  save_every:   5
+
+logging:
+  log_dir:      "./results/model2c"
+  eval_snrs:    [0, 5, 10, 15, 20]
+  eval_channels: ["awgn", "rayleigh"]

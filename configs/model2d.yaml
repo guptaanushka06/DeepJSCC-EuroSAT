@@ -1,0 +1,46 @@
+# configs/model2d.yaml
+# --------------------
+# Model 2d: Layer-3 with Unfrozen layer3 (dual learning rate)
+# lr = 1e-3 for JSCC/CNN decoder, lr_backbone = 1e-4 for layer3
+# ResNet BatchNorm running statistics kept strictly in eval() mode
+# Synchronized training data augmentation + weight decay 1e-4
+
+model:
+  name: "ResNetJSCC_2d"
+  channel: "awgn"
+
+training:
+  seed:         42
+  epochs:       30
+  patience:     8
+  batch_size:   64
+  num_workers:  2
+
+  augment:      true
+  amp:          true
+  weight_decay: 1.0e-4
+
+  # Dual learning rates
+  optimizer:    "adam"
+  lr:           1.0e-3     # for JSCC encoder/decoder and CNN decoder
+  lr_backbone:  1.0e-4     # for unfrozen ResNet layer3
+
+  scheduler:    "cosine"
+  lr_min:       1.0e-5
+  loss:         "mse"
+
+  snr_min:      0.0
+  snr_max:      20.0
+
+data:
+  root:         "./data"
+  download:     true
+
+checkpoints:
+  dir:          "./checkpoints/model2d"
+  save_every:   5
+
+logging:
+  log_dir:      "./results/model2d"
+  eval_snrs:    [0, 5, 10, 15, 20]
+  eval_channels: ["awgn", "rayleigh"]

@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+.streamlit/secrets.toml
+.DS_Store.streamlit/credentials.toml
+.streamlit/secrets.toml
+
+/.streamlit/credentials.toml
+/.streamlit/secrets.toml

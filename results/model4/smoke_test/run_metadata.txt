@@ -1,0 +1,24 @@
+======================================================================
+  MODEL & TRAINING CONFIGURATION AUDIT
+======================================================================
+  Device              : cuda
+  Config File         : configs/model4.yaml
+  Model Architecture  : SwinJSCC
+  SwinJSCC Depths     : [2, 2, 2]
+  SwinJSCC Embed Dim  : 48
+  SwinJSCC Heads      : [3, 6, 6]
+  SwinJSCC Window Sz  : [8, 8, 4]
+  Bottleneck Channels : 256 (4,096 reals)
+  Train Crop Size     : None (full 64x64)
+  Mixed Precision     : FP16 Autocast ON
+  Semantic Lambda (lam): 0.0
+PSNR
+  Total Epochs        : 30
+  EarlyStop Patience  : 8
+  Batch Size          : 64
+  Learning Rate       : 0.001
+  Data Augmentation   : ENABLED (train only)
+  Parameters: Total   : 2,657,008
+  Parameters: Train   : 2,657,008
+  Parameters: Frozen  : 0
+======================================================================

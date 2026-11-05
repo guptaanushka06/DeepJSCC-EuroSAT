@@ -1,0 +1,73 @@
+# configs/model3_swinir.yaml
+# ----------------------------
+# Stage 3 PRIMARY: Frozen Model 2d base + SwinIR refiner with FiLM SNR conditioning.
+#
+# Pipeline:
+#   1. Model 2d (frozen) -> preliminary reconstruction I_prelim
+#   2. SwinIR + FiLM(SNR) -> residual correction (trained on 32x32 random crop)
+#   3. Output = clamp(I_prelim + residual, 0, 1)
+#
+# SwinIR config: img_size=32, embed_dim=60, depths=[4,4,4,4], window_size=8
+# FiLM: applied at initial feature only (film_at_rstb: false)
+# Trainable params: 670,891 (SwinIR + FiLM MLP)
+# Zero-initialized output conv ensures exact identity init (Epoch 0 val ~25.5 dB)
+
+model:
+  name: "SwinRefineJSCC"
+  channel: "awgn"
+
+  # Base model (frozen)
+  base_config:      "configs/model2d.yaml"
+  base_checkpoint:  "checkpoints/model2d/best.pt"
+
+  # Refiner type: "swinir" | "swinir_nosnr" | "cnn"
+  refiner:          "swinir"
+
+  # SwinIR hyperparameters (optimized for T4 GPU)
+  swinir_embed_dim:  60
+  swinir_depths:     [4, 4, 4, 4]
+  swinir_num_heads:  [6, 6, 6, 6]
+  swinir_window_size: 8
+
+  # FiLM SNR conditioning
+  film_at_rstb:      false       # Apply FiLM only at initial feature
+
+  # Random channel sampling during training (AWGN or Rayleigh per batch)
+  random_channel:    false       # default: AWGN only
+
+training:
+  seed:         42
+  epochs:       15
+  patience:     5
+  batch_size:   64
+  num_workers:  2
+
+  # Training optimizations
+  amp:          true             # FP16 mixed precision autocast for training step
+  crop_size:    32               # Synchronized 32x32 random crop for refiner training (val/test on 64x64)
+  augment:      true
+  weight_decay: 1.0e-4
+
+  optimizer:    "adam"
+  lr:           1.0e-4           # refiner learning rate
+  lr_swinir:    1.0e-4
+
+  scheduler:    "cosine"
+  lr_min:       1.0e-6
+  loss:         "mse"
+
+  snr_min:      0.0
+  snr_max:      20.0
+
+data:
+  root:         "./data"
+  download:     true
+
+checkpoints:
+  dir:          "./checkpoints/model3_swinir"
+  save_every:   5
+
+logging:
+  log_dir:      "./results/model3_swinir"
+  eval_snrs:    [0, 5, 10, 15, 20]
+  eval_channels: ["awgn", "rayleigh"]

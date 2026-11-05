@@ -1,0 +1,10 @@
+model,latency_ms,psnr_db,ssim,ram_mb,resnet18_pred,mobilenet_pred,status
+Model 1: PlainDeepJSCC (Fair Baseline),49.00303999893367,37.551,0.937,96.56476402282715,AnnualCrop,AnnualCrop,PASS
+Model 2d: ResNetJSCC (Layer-3 Tap),45.50934000289999,33.116,0.883,96.8424711227417,AnnualCrop,SeaLake,PASS
+Model 2d Long: ResNetJSCC (60 Epochs),55.509799998253584,33.34,0.8859,97.0310697555542,AnnualCrop,SeaLake,PASS
+Model 3: SwinIR Refiner,216.28627999452874,33.269,0.8865,98.03685283660889,AnnualCrop,SeaLake,PASS
+"Model 3b: Semantic Refiner (λ=0.0003, Seed 42)",75.17306000227109,32.803,0.8581,98.39063453674316,HerbaceousVeg,AnnualCrop,PASS
+Model 3b: Semantic Refiner (λ=0.001),66.03658000240102,32.319,0.8322,98.7258710861206,PermanentCrop,AnnualCrop,PASS
+Model 4: Full SwinJSCC (Transformer End-to-End),61.20998000842519,23.766,0.8215,99.20044898986816,SeaLake,SeaLake,PASS
+Model 4-NoShift: SwinJSCC Ablation (W-MSA Only),54.27933998871595,32.917,0.9014,99.6678056716919,AnnualCrop,SeaLake,PASS
+Model 4-Conv: Non-Swin Baseline (ConvJSCC),42.909639998106286,35.292,0.8971,99.94603252410889,AnnualCrop,SeaLake,PASS

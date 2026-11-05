@@ -1,0 +1,51 @@
+# configs/model4_noshift.yaml
+# ---------------------------
+# Stage 4 Ablation C: SwinJSCC without Shifted-Window Attention (W-MSA only)
+#
+# Tests the specific contribution of shifted-window cross-attention
+# while keeping all parameters, depths, heads, and channel constraints identical.
+
+model:
+  name: "SwinJSCC"
+  channel: "awgn"
+
+  embed_dim:    48
+  depths:       [2, 2, 2]
+  num_heads:    [3, 6, 6]
+  window_sizes: [8, 8, 4]
+  bottleneck_ch: 256
+  use_shift:    false          # Ablation C: Shifted-window disabled (pure W-MSA)
+
+training:
+  seed:         42
+  epochs:       30
+  patience:     8
+  batch_size:   64
+  num_workers:  2
+
+  amp:          true
+  augment:      true
+  weight_decay: 1.0e-4
+
+  optimizer:    "adam"
+  lr:           1.0e-3
+  scheduler:    "cosine"
+  lr_min:       1.0e-5
+  loss:         "mse"
+
+  snr_min:      0.0
+  snr_max:      20.0
+
+data:
+  root:         "./data"
+  download:     true
+
+checkpoints:
+  dir:          "./checkpoints/model4_noshift"
+  save_every:   1
+
+logging:
+  log_dir:      "./results/model4_noshift"
+  eval_snrs:    [0, 5, 10, 15, 20]
+  eval_channels: ["awgn", "rayleigh"]
+

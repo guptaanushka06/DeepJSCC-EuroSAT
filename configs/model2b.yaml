@@ -1,0 +1,41 @@
+# configs/model2b.yaml
+# --------------------
+# Model 2b (Control): Layer-4 as specified (512×2×2 = 2048) + Regularization
+# Receiver-side Dropout(0.1) between dense layers, weight decay 1e-4, augmentation
+# Used as an experimental control to isolate the effect of regularization vs feature capacity
+
+model:
+  name: "ResNetJSCC_2b"
+  channel: "awgn"
+
+training:
+  seed:         42
+  epochs:       30
+  patience:     8
+  batch_size:   64
+  num_workers:  2
+
+  augment:      true
+  weight_decay: 1.0e-4
+
+  optimizer:    "adam"
+  lr:           1.0e-3
+  scheduler:    "cosine"
+  lr_min:       1.0e-5
+  loss:         "mse"
+
+  snr_min:      0.0
+  snr_max:      20.0
+
+data:
+  root:         "./data"
+  download:     true
+
+checkpoints:
+  dir:          "./checkpoints/model2b"
+  save_every:   5
+
+logging:
+  log_dir:      "./results/model2b"
+  eval_snrs:    [0, 5, 10, 15, 20]
+  eval_channels: ["awgn", "rayleigh"]

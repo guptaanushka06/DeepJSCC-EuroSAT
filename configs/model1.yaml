@@ -1,0 +1,43 @@
+# configs/model1.yaml
+# -------------------
+# Configuration for Model 1: Plain DeepJSCC
+# Run with:  python train.py --config configs/model1.yaml
+
+model:
+  name: "PlainDeepJSCC"
+  channel: "awgn"       # default channel; overridden at eval time for Rayleigh
+
+training:
+  seed:        42
+  epochs:      80
+  batch_size:  64
+  num_workers: 2         # set to 0 if running on Colab with multiprocessing issues
+
+  # SNR range for random-SNR training (samples uniformly per batch)
+  snr_min:  0.0          # dB
+  snr_max: 20.0          # dB
+
+  # Optimizer
+  optimizer:   "adam"
+  lr:          1.0e-3
+  weight_decay: 0.0
+
+  # LR schedule: cosine annealing to lr_min over all epochs
+  scheduler: "cosine"
+  lr_min:    1.0e-5
+
+  # Loss
+  loss: "mse"
+
+data:
+  root:       "./data"
+  download:   true
+
+checkpoints:
+  dir:        "./checkpoints/model1"
+  save_every: 10         # save a checkpoint every N epochs
+
+logging:
+  log_dir:    "./results/model1"
+  eval_snrs:  [0, 5, 10, 15, 20]   # dB — fixed SNRs to log PSNR/SSIM at
+  eval_channels: ["awgn", "rayleigh"]

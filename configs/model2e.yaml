@@ -1,0 +1,41 @@
+# configs/model2e.yaml
+# --------------------
+# Model 2e: 128×128 Upsampled ResNet Input + Layer-4 (512×4×4 = 8192 values)
+# Conv2d(512→256) projection to 4096 reals; target image is 64×64
+# Synchronized training data augmentation + weight decay 1e-4
+
+model:
+  name: "ResNetJSCC_2e"
+  channel: "awgn"
+
+training:
+  seed:         42
+  epochs:       30
+  patience:     8
+  batch_size:   64
+  num_workers:  2
+
+  augment:      true
+  weight_decay: 1.0e-4
+
+  snr_min:      0.0
+  snr_max:      20.0
+
+  optimizer:    "adam"
+  lr:           1.0e-3
+  scheduler:    "cosine"
+  lr_min:       1.0e-5
+  loss:         "mse"
+
+data:
+  root:         "./data"
+  download:     true
+
+checkpoints:
+  dir:          "./checkpoints/model2e"
+  save_every:   5
+
+logging:
+  log_dir:      "./results/model2e"
+  eval_snrs:    [0, 5, 10, 15, 20]
+  eval_channels: ["awgn", "rayleigh"]

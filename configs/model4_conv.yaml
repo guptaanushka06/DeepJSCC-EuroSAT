@@ -1,0 +1,48 @@
+# configs/model4_conv.yaml
+# ------------------------
+# Stage 4 Ablation A: Non-Swin Convolutional/Residual JSCC Baseline (ConvJSCC)
+#
+# Tests whether Swin self-attention provides superior rate-distortion / semantic preservation
+# over pure convolutional residual representations under identical 4,096 channel uses.
+
+model:
+  name: "ConvJSCC"
+  channel: "awgn"
+
+  embed_dim:    48
+  bottleneck_ch: 256           # 256 ch * 4 * 4 = 4096 reals
+  n_blocks:     [2, 2, 1]      # ~2.59M parameters (matches SwinJSCC 2.66M within 2.7%)
+
+training:
+  seed:         42
+  epochs:       30
+  patience:     8
+  batch_size:   64
+  num_workers:  2
+
+  amp:          true
+  augment:      true
+  weight_decay: 1.0e-4
+
+  optimizer:    "adam"
+  lr:           1.0e-3
+  scheduler:    "cosine"
+  lr_min:       1.0e-5
+  loss:         "mse"
+
+  snr_min:      0.0
+  snr_max:      20.0
+
+data:
+  root:         "./data"
+  download:     true
+
+checkpoints:
+  dir:          "./checkpoints/model4_conv"
+  save_every:   1
+
+logging:
+  log_dir:      "./results/model4_conv"
+  eval_snrs:    [0, 5, 10, 15, 20]
+  eval_channels: ["awgn", "rayleigh"]
+

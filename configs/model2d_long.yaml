@@ -1,0 +1,49 @@
+# configs/model2d_long.yaml
+# -------------------------
+# Extended 60-epoch training for Model 2d (ResNetJSCC_2d)
+# Purpose: Investigate training-budget fairness and test whether
+# baseline ResNet-18 transceiver was undertrained at 30 epochs.
+#
+# Checkpoints saved in dedicated directory: checkpoints/model2d_long
+# Results saved in dedicated directory: results/model2d_long
+# Existing checkpoints and results remain 100% untouched.
+
+model:
+  name: "ResNetJSCC_2d"
+  channel: "awgn"
+
+training:
+  seed:         42
+  epochs:       60
+  patience:     15
+  batch_size:   64
+  num_workers:  2
+
+  augment:      true
+  amp:          true
+  weight_decay: 1.0e-4
+
+  optimizer:    "adam"
+  lr:           1.0e-3     # for JSCC encoder/decoder and CNN decoder
+  lr_backbone:  1.0e-4     # for unfrozen ResNet layer3
+
+  scheduler:    "cosine"
+  lr_min:       1.0e-5
+  loss:         "mse"
+
+  snr_min:      0.0
+  snr_max:      20.0
+
+data:
+  root:         "./data"
+  download:     true
+
+checkpoints:
+  dir:          "./checkpoints/model2d_long"
+  save_every:   5
+
+logging:
+  log_dir:      "./results/model2d_long"
+  eval_snrs:    [0, 5, 10, 15, 20]
+  eval_channels: ["awgn", "rayleigh"]
+

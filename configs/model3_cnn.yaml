@@ -1,0 +1,62 @@
+# configs/model3_cnn.yaml
+# ----------------------------
+# Stage 3 CONTROL: Frozen Model 2d base + Plain CNN refiner.
+#
+# CNN is parameter-matched to SwinIR [4,4,4,4] (669,453 vs 670,891 params, 0.21% diff).
+# Architecture: conv_in(3->64) -> 9x ResBlocks(64) -> conv_out(64->3), residual.
+# Zero-initialized output conv ensures exact identity init (Epoch 0 val ~25.5 dB).
+# No SNR conditioning (the CNN ignores snr_db).
+
+model:
+  name: "SwinRefineJSCC"
+  channel: "awgn"
+
+  # Base model (frozen)
+  base_config:      "configs/model2d.yaml"
+  base_checkpoint:  "checkpoints/model2d/best.pt"
+
+  # Refiner type
+  refiner:          "cnn"
+
+  # CNN refiner hyperparameters (parameter-matched to SwinIR [4,4,4,4]: 669,453 params)
+  cnn_mid_ch:       64
+  cnn_n_blocks:     9
+
+  random_channel:   false
+
+training:
+  seed:         42
+  epochs:       15
+  patience:     5
+  batch_size:   64
+  num_workers:  2
+
+  # Identical recipe across refiners
+  amp:          true             # FP16 mixed precision autocast for training step
+  crop_size:    32               # Synchronized 32x32 random crop for refiner training (val/test on 64x64)
+  augment:      true
+  weight_decay: 1.0e-4
+
+  optimizer:    "adam"
+  lr:           1.0e-4
+  lr_swinir:    1.0e-4
+
+  scheduler:    "cosine"
+  lr_min:       1.0e-6
+  loss:         "mse"
+
+  snr_min:      0.0
+  snr_max:      20.0
+
+data:
+  root:         "./data"
+  download:     true
+
+checkpoints:
+  dir:          "./checkpoints/model3_cnn"
+  save_every:   5
+
+logging:
+  log_dir:      "./results/model3_cnn"
+  eval_snrs:    [0, 5, 10, 15, 20]
+  eval_channels: ["awgn", "rayleigh"]
